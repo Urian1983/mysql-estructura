@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS level1Ex1;
-CREATE DATABASE level1Ex1;
-USE level1Ex1;
+DROP DATABASE IF EXISTS optica;
+CREATE DATABASE optica;
+USE optica;
 
 CREATE TABLE adreça (
     id_adreça INT AUTO_INCREMENT PRIMARY KEY,
@@ -10,30 +10,30 @@ CREATE TABLE adreça (
     pis DECIMAL(2,1),
     poblacio VARCHAR(50),
     codi_postal VARCHAR(10) NOT NULL,
-    pais VARCHAR(50),
-    telefon VARCHAR(9) NOT NULL,
-    fax VARCHAR(9),
-    nif VARCHAR(9) NOT NULL
+    pais VARCHAR(50)
 );
 
-INSERT INTO adreça (carrer, numero, porta, pis, poblacio, codi_postal, pais, telefon, fax, nif)
+INSERT INTO adreça (carrer, numero, porta, pis, poblacio, codi_postal, pais)
 VALUES
-('Carrer Major', '12', 'A', 1.0, 'Madrid', '08001', 'Espanya', '933123456', '933123457', 'B12345678'),
-('Carrer Sant Jordi', '5', 'B', 2.0, 'Malaga', '08002', 'Espanya', '933223456', '933223457', 'B23456789'),
-('Carrer Pau Claris', '20', NULL, 0.0, 'Barcelona', '08003', 'Espanya', '933323456', '933323457', 'B34567890');
+('Carrer Major', '12', 'A', 1.0, 'Madrid', '08001', 'Espanya'),
+('Carrer Sant Jordi', '5', 'B', 2.0, 'Malaga', '08002', 'Espanya'),
+('Carrer Pau Claris', '20', NULL, 0.0, 'Barcelona', '08003', 'Espanya');
 
 CREATE TABLE proveidor (
     id_proveidor INT AUTO_INCREMENT PRIMARY KEY,
     nom VARCHAR(100) NOT NULL,
-    id_adreça INT,
+	nif VARCHAR(9) NOT NULL,
+    telefon VARCHAR(9) NOT NULL,
+    fax VARCHAR(9),
+	id_adreça INT,
     FOREIGN KEY (id_adreça) REFERENCES adreça(id_adreça)
 );
 
-INSERT INTO proveidor (nom, id_adreça)
+INSERT INTO proveidor (nom, nif, telefon, fax, id_adreça)
 VALUES
-('OpticPro', 1),
-('VisionCorp', 2),
-('Lentillas S.A.', 3);
+('OpticPro', 'B12345678', '933123456', '933123457', 1),
+('VisionCorp', 'B23456789', '933223456', '933223457', 2),
+('Lentillas S.A.', 'B34567890', '933323456', '933323457', 3);
 
 CREATE TABLE empleats (
     id_empleats INT AUTO_INCREMENT PRIMARY KEY,
@@ -95,9 +95,22 @@ VALUES
 ('Versace', 'V321', 1.50, 1.50, 'pasta', 'vermell', 'transparent', 180, 1, 1),
 ('Gucci', 'G654', 2.25, 2.00, 'metàl·lica', 'negre', 'groc', 220, 2, 2);
 
+-- Consultes
 
+SELECT c.nom AS client, COUNT(u.id_ulleres) AS total_factures
+FROM clients c
+JOIN ulleres u ON u.id_empleat = c.id_empleats
+WHERE c.id_clients = 1  -- 🔹 Canvia pel client que vols
+  AND c.registre BETWEEN '2025-01-01' AND '2025-12-31'
+GROUP BY c.id_clients;
 
+SELECT DISTINCT u.marca, u.model
+FROM ulleres u
+JOIN empleats e ON u.id_empleat = e.id_empleats
+WHERE e.id_empleats = 1
+  AND YEAR(u.id_ulleres) = 2025;
 
-
-
+SELECT DISTINCT p.nom AS proveidor
+FROM ulleres u
+JOIN proveidor p ON u.id_proveidor = p.id_proveidor;
 
